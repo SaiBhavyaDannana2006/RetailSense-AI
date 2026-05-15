@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+onnxruntime
+python-multipart
+opencv-python
+numpy
+supervision
+pandas
+google-generativeai

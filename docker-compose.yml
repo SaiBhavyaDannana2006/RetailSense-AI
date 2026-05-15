@@ -1,0 +1,11 @@
+services:
+  retailsense-api:
+    build: .
+    image: retailsense-api:latest
+    container_name: retailsense-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./retail_analytics.db:/app/retail_analytics.db
+      - ./RetailSense_Final_Report.csv:/app/RetailSense_Final_Report.csv
+    restart: always

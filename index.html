@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetailSense AI | Antigravity Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --accent: #38bdf8;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --warning: #facc15;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+        }
+
+        header {
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .logo-svg {
+            stroke: #38bdf8;
+            filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4));
+        }
+
+        .history-container {
+            grid-column: 1 / -1;
+            margin-top: 2rem;
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .history-table th {
+            text-align: left;
+            padding: 1rem;
+            color: var(--muted);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .history-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .history-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .status {
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ef4444;
+        }
+
+        .status-dot.online {
+            background: #22c55e;
+            box-shadow: 0 0 10px #22c55e;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+
+        .card-label {
+            color: var(--muted);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-value {
+            font-size: 3rem;
+            font-weight: 700;
+        }
+
+        .card-unit {
+            font-size: 1rem;
+            color: var(--muted);
+            margin-left: 0.25rem;
+        }
+
+        .insight-card {
+            grid-column: 1 / -1;
+            border-left: 4px solid var(--accent);
+            margin-top: 1rem;
+            background: linear-gradient(145deg, var(--card-bg), #2d3748);
+        }
+
+        .insight-text {
+            font-size: 1.25rem;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .ai-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: var(--accent);
+            color: var(--bg);
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>
+            <svg class="logo-svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                <circle cx="12" cy="13" r="4"></circle>
+            </svg>
+            RetailSense AI
+        </h1>
+        <div class="status">
+            <div id="status-dot" class="status-dot"></div>
+            <span id="status-text">Disconnected</span>
+        </div>
+    </header>
+
+    <main class="grid">
+        <div class="card">
+            <div class="card-label">Total Entries (IN)</div>
+            <div class="card-value" id="count-in">0</div>
+        </div>
+        <div class="card">
+            <div class="card-label">Total Exits (OUT)</div>
+            <div class="card-value" id="count-out">0</div>
+        </div>
+        <div class="card">
+            <div class="card-label">Avg. Dwell Time</div>
+            <div class="card-value" id="dwell-time">0<span class="card-unit">s</span></div>
+        </div>
+        <div class="card">
+            <div class="card-label">Active Persons</div>
+            <div class="card-value" id="active-count">0</div>
+        </div>
+        <div class="card insight-card" id="insight-section">
+            <div class="ai-badge">Gemini 3 Analysis</div>
+            <div class="card-label">Lost Conversion Insight</div>
+            <div class="insight-text" id="ai-insight">Waiting for data...</div>
+        </div>
+
+        <section class="history-container">
+            <div class="ai-badge">Recent Analytics Log</div>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Entries</th>
+                        <th>Exits</th>
+                        <th>Avg. Dwell</th>
+                    </tr>
+                </thead>
+                <tbody id="history-body">
+                    <!-- History data injected here -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script>
+        let ws;
+        const statusDot = document.getElementById('status-dot');
+        const statusText = document.getElementById('status-text');
+
+        /**
+         * Initialize WebSocket connection with auto-reconnect
+         */
+        function connect() {
+            ws = new WebSocket(`ws://${window.location.host}/ws`);
+
+            ws.onopen = () => {
+                statusDot.classList.add('online');
+                statusText.textContent = 'Live System Online';
+                console.log('WebSocket connected');
+            };
+
+            ws.onclose = () => {
+                statusDot.classList.remove('online');
+                statusText.textContent = 'System Offline - Reconnecting...';
+                console.log('WebSocket disconnected. Retrying in 5s...');
+                setTimeout(connect, 5000);
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket Error:', error);
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    document.getElementById('count-in').textContent = data.total_entries;
+                    document.getElementById('count-out').textContent = data.total_exits;
+                    document.getElementById('dwell-time').innerHTML = `${data.avg_dwell_time.toFixed(1)}<span class="card-unit">s</span>`;
+                    document.getElementById('active-count').textContent = data.active_count;
+                    
+                    if (data.gemini_insight) {
+                        document.getElementById('ai-insight').textContent = data.gemini_insight;
+                    } else {
+                        document.getElementById('ai-insight').textContent = "Monitoring floor activity for insights...";
+                    }
+                    
+                    // Fetch history on every WebSocket update to keep table fresh
+                    fetchHistory();
+                } catch (e) {
+                    console.error('Error parsing WebSocket data:', e);
+                }
+            };
+        }
+
+        /**
+         * Fetch recent analytics history from the backend
+         */
+        async function fetchHistory() {
+            try {
+                const response = await fetch('/history');
+                const data = await response.json();
+                const tbody = document.getElementById('history-body');
+                
+                tbody.innerHTML = data.map(row => `
+                    <tr>
+                        <td style="color: var(--muted)">${new Date(row.timestamp).toLocaleString()}</td>
+                        <td style="font-weight: 700">${row.entries}</td>
+                        <td style="font-weight: 700">${row.exits}</td>
+                        <td>${row.dwell_time.toFixed(1)}s</td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                console.error('Error fetching history:', e);
+            }
+        }
+
+        connect();
+        fetchHistory();
+    </script>
+</body>
+</html>
